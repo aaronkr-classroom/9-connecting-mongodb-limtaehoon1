@@ -1,11 +1,15 @@
 // main2.js
 "use strict";
 
+
+
 const port = 3000,
   express = require("express"),
   layouts = require("express-ejs-layouts"),
   homeController = require("./controllers/homeController"),
   errorController = require("./controllers/errorController"),
+  Subscriber = require("./models/subscriber"),
+
   // @TODO: Subscriber 모델 가져오기
   app = express();
 
@@ -13,27 +17,77 @@ const port = 3000,
  * @TODO: Listing 14.1 (p. 205)
  * Mongoose를 사용한 MongoDB 연결
  */
+const mongoose = require("mongoose"),
+  dbURL = "mongodb+srv://lim021298:5y1WjKWUJ4biiarS@ut-node.z7jjt1w.mongodb.net/?retryWrites=true&w=majority&appName=ut-node",
+  dbName = "ut-node";
 
-
+mongoose.connect(
+  dbURL +"/"+dbName,
+  {useNewUrlParser: true}
+  
+  // URL +dbName
+);
+const db = mongoose.connection;
 /**
  * @TODO: Listing 14.2 (p. 206)
  * 데이터베이스 연결 이벤트 처리
  */
-
+db.once("open", () => {
+  console.log("Successfully MongoDB");
+})
 
 /**
  * Listing 14.4 (p. 207)
  * 생성과 저장 구문
  */
+let sub1 = new Subscriber({
+  name : "Aaron snowberger",
+  email : "aaron@ut.ac.kr",
+  phone : 123423213,
+  newsletter:true
 
-
+});
+//version1
+sub1.save()
+  .then(saveDoc => {
+    console.log(saveDoc);
+  })
+  .catch(error =>{
+    console.log(error);
+  });
+// version 2
+Subscriber.create({
+  name : "Aaron snowberger",
+  email : "aaron@ut.ac.kr",
+  phone : 12312321,
+  newsletter:false
+})
+.then(saveDoc => {
+  console.log(saveDoc);
+})
+.catch(error =>{
+  console.log(error);
+});
 // (선택) DB find() after 14.5
-
-
+let tom = Subscriber
+  .findOne({name : "Aaron Snowberger"})
+  .where(
+    "email",/aaron/
+    
+  );
+  console.log("Found user :", tom);
 /**
  * @TODO: Listing 14.6 (p. 208)
  * 데이터베이스에서 데이터 검색
  */
+var query = Subscriber.findOne({
+  name : "Aaron Snowberger",
+
+}).where("email", /aaron/);
+query.exec()
+  .then((error,data) => {
+    if(data) console.log(data.name);
+  });
 
 
 app.set("port", process.env.PORT || port);
