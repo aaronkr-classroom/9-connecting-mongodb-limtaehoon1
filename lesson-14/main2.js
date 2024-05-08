@@ -25,7 +25,7 @@ mongoose.connect(
   dbURL +"/"+dbName,
   {useNewUrlParser: true}
   
-  // URL +dbName
+  // URL +dbName 7
 );
 const db = mongoose.connection;
 /**
